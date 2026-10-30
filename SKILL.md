@@ -46,3 +46,15 @@ bun run scripts/optimize-dictation.ts [--days 30] [--dry-run] [--corrections cor
 
 - Corrections take effect in the daemon's matcher. Whether a given utterance is corrected needs live dictation to confirm.
 - No CLI can enqueue a correction non-interactively. `always corrections approve` only drains a queue that `corrections capture` (needs a live text selection) fills.
+
+## Measure and find errors
+
+Two reading aids read the Always daemon log. Neither changes the glossary.
+
+```bash
+bun run scripts/measure-dictation.ts --split 2026-10-29T09:37:00Z   # wrong-form rate before/after, and matcher counts
+bun run scripts/candidates.ts --max-distance 1                      # raw words one edit from a term, not yet in the glossary
+```
+
+- `measure-dictation.ts` reports, per wrong form: the wrong-form rate before and after the split, raw counts, and how many times the matcher applied the term. A rate with no raw lines in its period shows `n/a`.
+- `candidates.ts` lists words to review by hand. Every candidate needs a human decision before it goes into a corrections file. Words under 3 letters are skipped.
